@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pesquisa Eleitoral</title>
+</head>
+<body>
+  <h2>Pesquisa Eleitoral (Demo Online)</h2>
+
+  <input id="cpf" placeholder="Digite seu CPF"><br><br>
+
+  <button onclick="cadastrar()">Cadastrar</button>
+  <button onclick="pagar()">Pagar PIX</button>
+  <button onclick="status()">Ver Status</button>
+
+  <div id="voto" style="display:none">
+    <h3>Votação</h3>
+
+    <select id="p1">
+      <option>Lula</option>
+      <option>Bolsonaro</option>
+      <option>Outro</option>
+    </select>
+
+    <select id="p2">
+      <option>Lula x Bolsonaro</option>
+      <option>Lula x Outro</option>
+      <option>Bolsonaro x Outro</option>
+    </select>
+
+    <button onclick="votar()">Confirmar Voto</button>
+  </div>
+
+<script>
+const api = '/api';
+
+function cadastrar() {
+  fetch(api + '/cadastrar', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({cpf: cpf.value})
+  });
+}
+
+function pagar() {
+  fetch(api + '/pix', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({cpf: cpf.value})
+  }).then(r => r.json()).then(a => alert(a.mensagem));
+}
+
+function status() {
+  fetch(api + '/status', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({cpf: cpf.value})
+  }).then(r => r.json()).then(a => {
+    if (a.pagou && !a.votou) voto.style.display = 'block';
+  });
+}
+
+function votar() {
+  fetch(api + '/votar', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      cpf: cpf.value,
+      primeiro: p1.value,
+      segundo: p2.value
+    })
+  }).then(() => alert('Voto registrado'));
+}
+</script>
+</body>
+</html>
